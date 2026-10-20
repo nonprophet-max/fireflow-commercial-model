@@ -1,0 +1,339 @@
+{
+  "slug": "falaj",
+  "fictional": true,
+  "client": {
+    "name": "Falaj Community Bank",
+    "short": "Falaj",
+    "fictional_note": "Falaj Community Bank is a fictional bank. Its profile is a composite of a small digital bank in Abu Dhabi; it is not any real institution.",
+    "brand": {
+      "color_light": "#0F766E",
+      "color_dark": "#5EEAD4",
+      "tagline": "Banking that flows to the community"
+    },
+    "facts": [
+      "Digital-first community bank, Abu Dhabi",
+      "About 300,000 retail and 8,000 SME customers",
+      "App, contact centre and one branch; Arabic and English"
+    ]
+  },
+  "links": {
+    "standard_model": "../../index.html",
+    "overview": "../../overview.html"
+  },
+  "rates": {
+    "_note": "Illustrative reference market rates in $ per million tokens. Not quotes.",
+    "private": {
+      "in": 0.6,
+      "out": 0.8,
+      "label": "private open-weight model via an approved private API"
+    },
+    "frontier": {
+      "in": 3.0,
+      "out": 15.0,
+      "label": "frontier-model API"
+    }
+  },
+  "timeline": {
+    "setup_month": 1,
+    "prepay_month": 2,
+    "limited_month": 6,
+    "go_live_month": 7,
+    "year_months": 12,
+    "ramp": {
+      "6": 0.05,
+      "7": 0.5
+    }
+  },
+  "agents": [
+    {
+      "id": "support",
+      "name": "Support chat",
+      "workload": "UIO",
+      "model": "private",
+      "initial": true,
+      "unit": "chats",
+      "units_per_month": 60000,
+      "tokens_in": 72000,
+      "tokens_out": 3000,
+      "desc": "Explains charges, blocks cards, takes closure requests. Arabic and English.",
+      "control": "Card block needs customer confirmation; closures go to an officer."
+    },
+    {
+      "id": "onboarding",
+      "name": "Onboarding assistant",
+      "workload": "UIO",
+      "model": "private",
+      "initial": true,
+      "unit": "sessions",
+      "units_per_month": 12000,
+      "tokens_in": 30000,
+      "tokens_out": 1500,
+      "desc": "Guides UAE Pass, Emirates ID and selfie checks; explains pending verification.",
+      "control": "Explains status and requests documents; never approves or rejects."
+    },
+    {
+      "id": "kyc",
+      "name": "KYC exception triage",
+      "workload": "BPO",
+      "model": "private",
+      "initial": true,
+      "unit": "cases",
+      "units_per_month": 4000,
+      "tokens_in": 60000,
+      "tokens_out": 3000,
+      "desc": "Summarises stalled cases and missing documents for an analyst.",
+      "control": "Recommends a next step; an analyst decides every case."
+    },
+    {
+      "id": "sme",
+      "name": "SME assistant",
+      "workload": "UIO",
+      "model": "private",
+      "initial": false,
+      "unit": "sessions",
+      "units_per_month": 5000,
+      "tokens_in": 40000,
+      "tokens_out": 2000,
+      "desc": "Payroll (WPS) files, payments and statements for small firms."
+    },
+    {
+      "id": "complaints",
+      "name": "Complaints and disputes",
+      "workload": "BPO",
+      "model": "private",
+      "initial": false,
+      "unit": "cases",
+      "units_per_month": 3000,
+      "tokens_in": 40000,
+      "tokens_out": 3000,
+      "desc": "Classifies complaints, drafts replies and tracks deadlines."
+    },
+    {
+      "id": "credit",
+      "name": "SME credit pre-assessment",
+      "workload": "BPO",
+      "model": "private",
+      "initial": false,
+      "unit": "applications",
+      "units_per_month": 400,
+      "tokens_in": 200000,
+      "tokens_out": 8000,
+      "desc": "Collects documents and drafts a credit memo for the credit team."
+    },
+    {
+      "id": "circulars",
+      "name": "Circular review",
+      "workload": "BPO",
+      "model": "frontier",
+      "initial": false,
+      "unit": "documents",
+      "units_per_month": 40,
+      "tokens_in": 150000,
+      "tokens_out": 8000,
+      "desc": "Summarises new public regulator circulars for compliance."
+    }
+  ],
+  "addons_extra": "Arabic voice agent for the contact centre.",
+  "slides": {
+    "intro": {
+      "eyebrow": "ILLUSTRATIVE EXAMPLE · FICTIONAL BANK",
+      "title": [
+        "FireFlow at",
+        "Falaj Community Bank."
+      ],
+      "lead": "How the FireFlow commercial journey could run for a small digital bank in Abu Dhabi. The bank is fictional; every figure is an illustrative assumption."
+    },
+    "bank": {
+      "eyebrow": "THE BANK · CONTEXT",
+      "title": [
+        "A digital bank",
+        "for its community."
+      ],
+      "lead": "Falaj serves individuals and small businesses through its app, a contact centre and one branch. Partners handle cash and cheque deposits.",
+      "items": [
+        {
+          "icon": "message",
+          "title": "Faster answers",
+          "text": "Customers struggle to reach support at peak times."
+        },
+        {
+          "icon": "check",
+          "title": "Faster onboarding",
+          "text": "Some identity verifications stall for days."
+        },
+        {
+          "icon": "activity",
+          "title": "SME growth",
+          "text": "Payroll, payments and credit for small firms."
+        }
+      ],
+      "gate": [
+        "WHY FIREFLOW",
+        "Agents act inside approved limits, and customer data stays on private models."
+      ]
+    },
+    "use_cases": {
+      "eyebrow": "USE CASES · UIO AND BPO",
+      "title": [
+        "Three agents first.",
+        "More when ready."
+      ],
+      "lead": "Stage 1 scopes three agents. The others follow later as optional add-on services."
+    },
+    "systems": {
+      "eyebrow": "INITIAL MEETING · SYSTEMS",
+      "title": [
+        "Systems the agents",
+        "will touch."
+      ],
+      "lead": "Each system has a named owner at the bank. Agents get only the actions their use case needs.",
+      "items": [
+        {
+          "icon": "layers",
+          "title": "Core banking",
+          "text": "Cloud core: accounts, cards, transactions."
+        },
+        {
+          "icon": "shield",
+          "title": "eKYC and cases",
+          "text": "UAE Pass and Emirates ID results; verification queue."
+        },
+        {
+          "icon": "connect",
+          "title": "App, CRM and contact centre",
+          "text": "Chat channel, profiles, complaints, hand-off to people."
+        }
+      ],
+      "gate": [
+        "DATA BOUNDARY",
+        "Customer data is processed only by private models from an approved provider."
+      ]
+    },
+    "staging": {
+      "eyebrow": "STAGE 1 · STAGING SETUP · WEEKS 1–6",
+      "title": [
+        "Staging for",
+        "three agents."
+      ],
+      "lead": "Persistent Labs deploys staging in the bank's private cloud, trains the bank's business and engineering teams and writes the three agent specifications.",
+      "note": [
+        "Sandbox only",
+        "Mock customer data; no production access."
+      ],
+      "gate": [
+        "NEXT GATE",
+        "Staging ready; specifications for all three agents signed off."
+      ]
+    },
+    "build": {
+      "eyebrow": "STAGE 2 · BUILD & TEST · MONTHS 2–4",
+      "title": [
+        "Build and test",
+        "in two languages."
+      ],
+      "lead": "Agents are built against sandbox APIs, with Arabic and English test sets agreed with the bank.",
+      "steps": [
+        [
+          "Set up",
+          "Permissions & limits"
+        ],
+        [
+          "Build",
+          "Three agent flows"
+        ],
+        [
+          "Test",
+          "Agreed Arabic & English test cases"
+        ]
+      ],
+      "gate": [
+        "NEXT GATE",
+        "All three agents pass the agreed tests; the bank's business and engineering teams can edit the flows."
+      ]
+    },
+    "prepare": {
+      "eyebrow": "STAGE 3 · PREPARE PRODUCTION · MONTH 5",
+      "title": [
+        "Controls before",
+        "customers."
+      ],
+      "lead": "Persistent Labs and the bank agree what each agent may do alone and what needs a person.",
+      "gate": [
+        "NEXT GATE",
+        "Bank infosec and compliance approve the plan; Persistent Labs and the bank test the controls and the emergency stop."
+      ]
+    },
+    "rollout": {
+      "eyebrow": "STAGE 4 · LIMITED ROLLOUT · MONTH 6",
+      "title": [
+        "Start with",
+        "5% of customers."
+      ],
+      "lead": "Production APIs are connected. About 5% of app users get the new chat and onboarding help; KYC triage runs on live cases.",
+      "steps": [
+        [
+          "Connect",
+          "Production APIs"
+        ],
+        [
+          "Roll out",
+          "~5% of users"
+        ],
+        [
+          "Monitor",
+          "Answers, hand-offs, costs"
+        ]
+      ],
+      "gate": [
+        "NEXT GATE",
+        "Expand once compliance has reviewed the audit trail and four weeks have passed without critical incidents."
+      ]
+    },
+    "operate": {
+      "eyebrow": "STAGE 5 · FULL PRODUCTION · MONTH 7",
+      "title": [
+        "All customers.",
+        "Bank in control."
+      ],
+      "lead": "Customer agents reach all app users; KYC triage handles every stalled case. The bank runs operations; Persistent Labs maintains the platform.",
+      "split": [
+        [
+          "Falaj Community Bank",
+          "Operations, customer support and compliance."
+        ],
+        [
+          "Persistent Labs",
+          "Maintenance, updates and agreed incident response."
+        ]
+      ]
+    },
+    "usage": {
+      "eyebrow": "COMPUTE SURCHARGE · FULL RUN-RATE",
+      "title": [
+        "Inference costs",
+        "at full volume."
+      ],
+      "lead": "Monthly estimate at full volume. Both customer agents and the internal KYC triage run on private models, so the 25% rate applies.",
+      "gate": [
+        "BILLING",
+        "Monthly in arrears. Inference cost and surcharge are shown separately."
+      ]
+    },
+    "addons": {
+      "eyebrow": "OPTIONAL ADD-ON SERVICES",
+      "title": [
+        "What could",
+        "come next."
+      ],
+      "lead": "Each add-on gets its own statement of work, price and acceptance tests."
+    },
+    "year_one": {
+      "eyebrow": "YEAR ONE · ILLUSTRATIVE TOTAL",
+      "title": [
+        "Year one,",
+        "in one view."
+      ],
+      "lead": "Months 1–12 for the three initial agents. Add-on services are excluded."
+    }
+  }
+}
