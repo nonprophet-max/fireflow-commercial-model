@@ -5,7 +5,7 @@ description: Research a prospective FireFlow client (a bank or other organisatio
 
 # FireFlow client journey
 
-Use this skill when an organisation approaches Persistent Labs and we want to show it how FireFlow would be introduced in its case. The skill turns research about that organisation into a proposed commercial journey under its real name. The output is a 12-screen guided deck in the visual system of the standard walkthrough. It covers the organisation's context, three initial agents, systems to connect, the five deployment stages with timings, inference costs at full volume, possible add-on services and estimated year-one FireFlow fees.
+Use this skill when an organisation approaches Persistent Labs and we want to show it how FireFlow would be introduced in its case. The skill turns research about that organisation into a proposed commercial journey under its real name. The output is a guided deck of up to 15 screens in the visual system of the standard walkthrough. It covers the organisation's context, three initial agents, systems to connect, why FireFlow (a standard screen of platform features), the five deployment stages with timings, inference costs at full volume, possible add-on services and estimated year-one FireFlow fees.
 
 The same generator also builds **fictional examples** for public use, where the real organisation must not be recognisable. `clients/falaj.json` (Falaj Community Bank) is the reference example of that mode.
 
@@ -29,7 +29,7 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
    - Fictional examples never use a logo. The build refuses one.
    - Logo files live next to the client file, e.g. `clients/logos/<slug>.svg`, and are as confidential as the proposal.
 3. **Standard terms come from `commercial-terms.json`.** Don't type fees or rates into a client file. When the standard model changes, edit that file and rebuild every proposal and example.
-4. **On-premises and client control, never vendor access.** FireFlow runs in the client's own data centre or private cloud. The client's engineers connect its systems and decide what each agent may do. Persistent Labs works with mock data in staging and has no access to the client's systems, bank data or customer data. Never write that Persistent Labs connects to, reads or operates client systems; say who on the client side does it. By default the private model also runs inside the client's infrastructure (`rates.private.hosting: "self-hosted"`), so the surcharge uses a market-rate reference and nothing is re-billed.
+4. **On-premises and client control, never vendor access.** FireFlow runs in the client's own data centre or private cloud. The client's engineers connect its systems and decide what each agent may do. Persistent Labs works with synthetic data in staging and has no access to the client's systems, bank data or customer data. Never write that Persistent Labs connects to, reads or operates client systems; say who on the client side does it. By default the private model also runs inside the client's infrastructure (`rates.private.hosting: "self-hosted"`), so the surcharge uses a market-rate reference and nothing is re-billed.
 5. **Model policy.** UIO (customer-facing) agents use private models only. BPO agents may use frontier models for non-sensitive tasks. The build refuses a UIO agent on a frontier model.
 6. **Exactly three initial agents.** Stage 1 scopes the first three agents. Other agents are optional add-on services, with no prices ("quoted separately").
 7. **Confidentiality.** A real proposal names a prospect and its plans. Commit `clients/<slug>.json` and `proposals/<slug>/` only to a private repository, and confirm the repository is private before pushing. Don't publish proposals on a public site.
@@ -48,8 +48,8 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
    - public pain points: app-store and review sites, press.
 
    Keep a source URL for every fact you will use.
-2. **Choose three initial agents** that answer the organisation's real priorities or pain points: usually two UIO and one BPO. Then pick two to five add-ons. For each agent, estimate the monthly volume and the tokens per unit, including every model call in the flow.
-3. **Write the client file.** Copy `clients/_template.json` to `clients/<slug>.json`, then fill every `TODO`. If the client has provided its logo, save it to `clients/logos/` and set `client.logo`. `reference/client-format.md` describes each field. Keep copy short: every screen must fit a phone without scrolling. The build refuses a file that still contains `TODO`.
+2. **Frame the problem and choose three initial agents.** Lead with value, not basic support. The thesis (PersistentAI Overview): customers use a bank app only to pay, while their attention and spend go to marketplaces and other apps; UIO brings many apps into one end-to-end journey inside the client's app, which the client owns. Good initial agents create engagement or revenue: a shopping concierge (agentic commerce with partner merchants), a money co-pilot (bills, subscriptions, savings within customer-set limits) and life-event journeys (one request runs a whole chain of services). Internal BPO agents (KYC, credit, compliance) usually fit better as add-ons. A plain support chatbot should not be the headline. Then pick up to four add-ons. For each agent, estimate the monthly volume and the tokens per unit, including every model call in the flow.
+3. **Write the client file.** Copy `clients/_template.json` to `clients/<slug>.json`, then fill every `TODO`. If the client has provided its logo, save it to `clients/logos/` and set `client.logo`. `reference/client-format.md` describes each field. Keep copy short: every screen must fit a phone without scrolling. The build refuses a file that still contains `TODO`. Fill the two story screens too: `before_after` (one customer journey today versus in the client's app) and `team` (the client's product team builds its own agents in the visual builder, tested in staging).
 4. **Build** from the repository root:
 
    ```sh
@@ -83,6 +83,7 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
 | --- | --- |
 | `build_journey.py` | Generator, validation, calculation and name check (Python 3.9+, standard library). |
 | `commercial-terms.json` | Standard FireFlow terms used by every deck. |
+| `platform.json` | Standard "Why FireFlow" screen: five platform features (policies, on-premises, sandboxes, no-code builder, API and MCP integration). Keep it in line with docs.persistentai.org; update it when the platform changes. |
 | `links.json` | Standard "Learn more" links for each screen: persistentai.org, the FireFlow docs and blog, and sections of the detailed commercial plan. Update it when those pages move. |
 | `clients/_template.json` | Starting point for a real client proposal. |
 | `clients/falaj.json` | Fictional reference example (Falaj Community Bank). |

@@ -1,5 +1,5 @@
 {
-  "_note": "Standard 'Learn more' links shown on each screen of every deck. {detailed} is the detailed commercial plan. A client file can override a screen with slides.<screen>.links (an empty list removes them).",
+  "_note": "Standard 'Learn more' links shown on each screen of every deck. {detailed} and {overview} are the detailed commercial plan and the full overview of the standard walkthrough. A client file can override a screen with slides.<screen>.links (an empty list removes them).",
   "detailed": "https://nonprophet-max.github.io/fireflow-commercial-model/detailed.html",
   "screens": {
     "intro": [
@@ -13,6 +13,16 @@
       ]
     ],
     "use-cases": [
+      [
+        "UIO and BPO explained",
+        "{overview}#usage"
+      ],
+      [
+        "Why FireFlow",
+        "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
+      ]
+    ],
+    "before-after": [
       [
         "Why FireFlow",
         "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
@@ -28,6 +38,16 @@
         "https://docs.persistentai.org/developer/architecture/overview.html"
       ]
     ],
+    "why": [
+      [
+        "Documentation",
+        "https://docs.persistentai.org/"
+      ],
+      [
+        "Visual builder",
+        "https://docs.persistentai.org/guide/getting-started/quickstart/"
+      ]
+    ],
     "staging": [
       [
         "Setup terms",
@@ -38,6 +58,12 @@
       [
         "Maintenance terms",
         "{detailed}#maintenance-and-support"
+      ]
+    ],
+    "team": [
+      [
+        "Visual builder quickstart",
+        "https://docs.persistentai.org/guide/getting-started/quickstart/"
       ]
     ],
     "prepare": [
@@ -70,12 +96,12 @@
     ],
     "addons": [
       [
-        "Add-on terms",
-        "{detailed}#optional-services"
+        "UIO and BPO explained",
+        "{overview}#usage"
       ],
       [
-        "Stack and MCP",
-        "https://persistentai.substack.com/p/fireflow-stack-vision"
+        "Add-on terms",
+        "{detailed}#optional-services"
       ]
     ],
     "year-one": [
@@ -84,5 +110,6 @@
         "{detailed}"
       ]
     ]
-  }
+  },
+  "overview": "https://nonprophet-max.github.io/fireflow-commercial-model/overview.html"
 }

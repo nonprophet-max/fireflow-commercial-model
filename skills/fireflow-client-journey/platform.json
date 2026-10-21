@@ -1,0 +1,16 @@
+{
+  "_note": "Standard 'Why FireFlow' screen shown in every deck after the architecture screen. {short} becomes the client's short name. A client file can replace any field with slides.why, or skip the screen with \"why\": false. Keep claims in line with docs.persistentai.org.",
+  "why": {
+    "eyebrow": "WHY FIREFLOW",
+    "title": ["Safe for {short}.", "Simple for its teams."],
+    "lead": "Five things built into the platform, from staging to production.",
+    "items": [
+      {"icon": "shield", "title": "Detailed policies", "text": "Roles, limits and which actions need a person, set for each agent."},
+      {"icon": "layers", "title": "On-premises deployment", "text": "Runs in {short}'s own data centre or private cloud."},
+      {"icon": "code", "title": "Isolated sandboxes", "text": "Code that agents generate runs in sealed, isolated environments."},
+      {"icon": "branch", "title": "Visual builder, no code", "text": "Business teams build and change agents themselves."},
+      {"icon": "connect", "title": "Easy integration", "text": "API and MCP in and out. Any API becomes an MCP node on the FireFlow graph."}
+    ],
+    "gate": ["WHAT THIS MEANS", "{short} keeps control of its data and rules, and its own teams ship new agents."]
+  }
+}

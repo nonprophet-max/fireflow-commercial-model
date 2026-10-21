@@ -58,12 +58,15 @@ Stage copy in `slides.*.eyebrow` names weeks or months. Keep it consistent with 
 
 Each screen has `eyebrow`, `title` (two parts: a plain line and an emphasised line) and `lead`. Some screens take more:
 
-- `bank.items` and `systems.items`: three `{icon, title, text}` entries. Icons: `message`, `check`, `activity`, `layers`, `shield`, `connect`, `launch`, `scope`, `code`, `branch`.
+- `bank.items` (the client's problems) and `systems.items`: three `{icon, title, text}` entries. Icons: `message`, `check`, `activity`, `layers`, `shield`, `connect`, `launch`, `scope`, `code`, `branch`.
 - `bank.gate`, `systems.gate`, `staging.gate`, `build.gate`, `prepare.gate`, `rollout.gate`: `[LABEL, sentence]`.
 - `staging.note`: `[title, text]` under the Stage 1 price.
 - `build.steps`, `rollout.steps`: three `[title, text]` pairs.
 - `operate.split`: two `[who, responsibilities]` pairs.
 - `usage.gate`: the label is replaced by "ASSUMED RATES", and the sentence is appended to the rate note.
+- `before_after`: one customer journey compared side by side. `before` and `after` each have a `label`, a short `steps` list (up to six before, two or three after) and three `stats` pairs `[value, label]`, e.g. `["6", "steps"]`. Optional: leave it out to skip the screen.
+- `team`: the client's product team building its own agents. `steps` (three `[title, text]`), `note` (`[title, text]`) and `gate`. Optional: leave it out to skip the screen.
+- `why` (optional): the "Why FireFlow" screen is standard and comes from `platform.json`. Set `why` to an object to replace any of its fields (`eyebrow`, `title`, `lead`, five `items`, `gate`) for this client, or to `false` to skip the screen. `{short}` in that copy becomes the client's short name.
 - Any screen: `links`, a list of `[label, url]` pairs, replaces that screen's standard "Learn more" links from `links.json`. An empty list removes them. Keep labels short (two or three words) so they fit one line on a phone.
 
 The title-screen and last-screen notices depend on `fictional` and are generated. Figures (fees, prepayment, monthly start, surcharge, totals) are calculated: don't write them into copy.
