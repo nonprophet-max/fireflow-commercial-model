@@ -29,10 +29,11 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
    - Fictional examples never use a logo. The build refuses one.
    - Logo files live next to the client file, e.g. `clients/logos/<slug>.svg`, and are as confidential as the proposal.
 3. **Standard terms come from `commercial-terms.json`.** Don't type fees or rates into a client file. When the standard model changes, edit that file and rebuild every proposal and example.
-4. **Model policy.** UIO (customer-facing) agents use private models only. BPO agents may use frontier models for non-sensitive tasks. The build refuses a UIO agent on a frontier model.
-5. **Exactly three initial agents.** Stage 1 scopes the first three agents. Other agents are optional add-on services, with no prices ("quoted separately").
-6. **Confidentiality.** A real proposal names a prospect and its plans. Commit `clients/<slug>.json` and `proposals/<slug>/` only to a private repository, and confirm the repository is private before pushing. Don't publish proposals on a public site.
-7. **Fictional examples only:** derive, don't copy. Keep the type of organisation, city, segments, channels and pain points. Remove or generalise anything that identifies the real entity: product names, partners, vendors, branch locations, executives, unusual products. Its research notes and real names stay out of the repository.
+4. **On-premises and client control, never vendor access.** FireFlow runs in the client's own data centre or private cloud. The client's engineers connect its systems and decide what each agent may do. Persistent Labs works with mock data in staging and has no access to the client's systems, bank data or customer data. Never write that Persistent Labs connects to, reads or operates client systems; say who on the client side does it. By default the private model also runs inside the client's infrastructure (`rates.private.hosting: "self-hosted"`), so the surcharge uses a market-rate reference and nothing is re-billed.
+5. **Model policy.** UIO (customer-facing) agents use private models only. BPO agents may use frontier models for non-sensitive tasks. The build refuses a UIO agent on a frontier model.
+6. **Exactly three initial agents.** Stage 1 scopes the first three agents. Other agents are optional add-on services, with no prices ("quoted separately").
+7. **Confidentiality.** A real proposal names a prospect and its plans. Commit `clients/<slug>.json` and `proposals/<slug>/` only to a private repository, and confirm the repository is private before pushing. Don't publish proposals on a public site.
+8. **Fictional examples only:** derive, don't copy. Keep the type of organisation, city, segments, channels and pain points. Remove or generalise anything that identifies the real entity: product names, partners, vendors, branch locations, executives, unusual products. Its research notes and real names stay out of the repository.
 
 ## Steps
 
@@ -63,6 +64,8 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
    - Facts: each statement about the client matches a source in `sources`.
    - Layout: open the deck at desktop and phone sizes, in light and dark themes. No text may overlap, clip or need page scrolling. If a screen is too dense, shorten its copy.
    - Tone: direct and operational. No compliance guarantees, no performance claims, no criticism of the client.
+   - Access: nothing says or implies that Persistent Labs reaches the client's systems or data.
+   - Links: every "Learn more" link opens.
 6. **Deliver.** The deck is a single HTML file that can be sent to the client as is, or hosted privately. Commit the client file and the deck on a branch and open a pull request.
 
 ## Calculations
@@ -80,6 +83,7 @@ The standard walkthrough (`index.html`, `overview.html`, `detailed.html` and the
 | --- | --- |
 | `build_journey.py` | Generator, validation, calculation and name check (Python 3.9+, standard library). |
 | `commercial-terms.json` | Standard FireFlow terms used by every deck. |
+| `links.json` | Standard "Learn more" links for each screen: persistentai.org, the FireFlow docs and blog, and sections of the detailed commercial plan. Update it when those pages move. |
 | `clients/_template.json` | Starting point for a real client proposal. |
 | `clients/falaj.json` | Fictional reference example (Falaj Community Bank). |
 | `reference/client-format.md` | Field-by-field description of a client file. |

@@ -10,8 +10,8 @@ A client file is JSON. For a real client, start from `clients/_template.json`; f
 | `fictional` | yes | `false` for a real client proposal, `true` for a fictional public example. |
 | `client` | yes | The organisation (below). |
 | `sources` | real clients | Public source URLs behind every fact used. Internal: not shown in the deck. |
-| `links` | no | `standard_model` and `overview` URLs. When present, the deck links to the standard walkthrough. Use relative links only for decks hosted next to it (as `examples/falaj` is). Omit them for a file sent to a client. |
-| `rates` | yes | Reference market rates in $ per million tokens: `private` and `frontier`, each with `in`, `out` and a short `label`. These are estimates, not quotes. |
+| `links` | no | `standard_model`, `overview` and `detailed` URLs of the standard walkthrough. Use full addresses (`https://…`) so links work in a file sent to a client. When omitted, the buttons to the walkthrough are hidden; `detailed` falls back to the value in `links.json`. |
+| `rates` | yes | Reference market rates in $ per million tokens: `private` and `frontier`, each with `in`, `out` and a short `label`. These are estimates, not quotes. Set `private.hosting` to `"self-hosted"` (default in the template: the model runs inside the client, so the deck shows a market-rate reference that is not billed) or `"api"` (an approved private API that the client pays for). |
 | `timeline` | yes | Month numbers (below). |
 | `agents` | yes | All agents: exactly three with `"initial": true`, the rest are add-ons. |
 | `addons_extra` | no | One sentence about further add-ons without volume figures. |
@@ -64,5 +64,6 @@ Each screen has `eyebrow`, `title` (two parts: a plain line and an emphasised li
 - `build.steps`, `rollout.steps`: three `[title, text]` pairs.
 - `operate.split`: two `[who, responsibilities]` pairs.
 - `usage.gate`: the label is replaced by "ASSUMED RATES", and the sentence is appended to the rate note.
+- Any screen: `links`, a list of `[label, url]` pairs, replaces that screen's standard "Learn more" links from `links.json`. An empty list removes them. Keep labels short (two or three words) so they fit one line on a phone.
 
 The title-screen and last-screen notices depend on `fictional` and are generated. Figures (fees, prepayment, monthly start, surcharge, totals) are calculated: don't write them into copy.

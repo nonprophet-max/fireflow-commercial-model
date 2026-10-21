@@ -17,15 +17,16 @@
     ]
   },
   "links": {
-    "standard_model": "../../index.html",
-    "overview": "../../overview.html"
+    "standard_model": "https://nonprophet-max.github.io/fireflow-commercial-model/",
+    "overview": "https://nonprophet-max.github.io/fireflow-commercial-model/overview.html"
   },
   "rates": {
     "_note": "Illustrative reference market rates in $ per million tokens. Not quotes.",
     "private": {
       "in": 0.6,
       "out": 0.8,
-      "label": "private open-weight model via an approved private API"
+      "label": "private open-weight model running in the bank's own infrastructure",
+      "hosting": "self-hosted"
     },
     "frontier": {
       "in": 3.0,
@@ -181,32 +182,32 @@
       "lead": "Stage 1 scopes three agents. The others follow later as optional add-on services."
     },
     "systems": {
-      "eyebrow": "INITIAL MEETING · SYSTEMS",
+      "eyebrow": "INITIAL MEETING · ARCHITECTURE",
       "title": [
-        "Systems the agents",
-        "will touch."
+        "Runs inside the bank.",
+        "Controlled by the bank."
       ],
-      "lead": "Each system has a named owner at the bank. Agents get only the actions their use case needs.",
+      "lead": "FireFlow is installed in the bank's own data centre or private cloud. Bank engineers connect its systems and decide what each agent may do.",
       "items": [
         {
           "icon": "layers",
-          "title": "Core banking",
-          "text": "Cloud core: accounts, cards, transactions."
+          "title": "On-premises deployment",
+          "text": "FireFlow and its data stay inside the bank's infrastructure."
         },
         {
           "icon": "shield",
-          "title": "eKYC and cases",
-          "text": "UAE Pass and Emirates ID results; verification queue."
+          "title": "Bank-controlled access",
+          "text": "Bank engineers connect core banking, eKYC and CRM through approved APIs."
         },
         {
-          "icon": "connect",
-          "title": "App, CRM and contact centre",
-          "text": "Chat channel, profiles, complaints, hand-off to people."
+          "icon": "check",
+          "title": "No vendor access to data",
+          "text": "Persistent Labs works only with mock data and never sees bank or customer data."
         }
       ],
       "gate": [
         "DATA BOUNDARY",
-        "Customer data is processed only by private models from an approved provider."
+        "Customer data and the AI models stay inside the bank's infrastructure. Persistent Labs has no access."
       ]
     },
     "staging": {
@@ -215,7 +216,7 @@
         "Staging for",
         "three agents."
       ],
-      "lead": "Persistent Labs deploys staging in the bank's private cloud, trains the bank's business and engineering teams and writes the three agent specifications.",
+      "lead": "Persistent Labs sets up an isolated staging environment with mock data, trains the bank's business and engineering teams and writes the three agent specifications.",
       "note": [
         "Sandbox only",
         "Mock customer data; no production access."
@@ -269,7 +270,7 @@
         "Start with",
         "5% of customers."
       ],
-      "lead": "Production APIs are connected. About 5% of app users get the new chat and onboarding help; KYC triage runs on live cases.",
+      "lead": "The bank's engineers connect production APIs. About 5% of app users get the new chat and onboarding help; KYC triage runs on live cases.",
       "steps": [
         [
           "Connect",
@@ -303,7 +304,7 @@
         ],
         [
           "Persistent Labs",
-          "Maintenance, updates and agreed incident response."
+          "Updates, fixes and incident support, with no access to customer data."
         ]
       ]
     },
@@ -313,10 +314,10 @@
         "Inference costs",
         "at full volume."
       ],
-      "lead": "Monthly estimate at full volume. Both customer agents and the internal KYC triage run on private models, so the 25% rate applies.",
+      "lead": "Monthly estimate at full volume. All three agents run on a private model inside the bank, so the 25% rate applies to a market-rate reference.",
       "gate": [
         "BILLING",
-        "Monthly in arrears. Inference cost and surcharge are shown separately."
+        "Monthly in arrears. The reference is only the basis for the surcharge; the bank's own hardware is not billed again."
       ]
     },
     "addons": {

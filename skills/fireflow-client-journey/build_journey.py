@@ -48,11 +48,23 @@ def gate(label, text):
             f'<div><span class="mini-label">{h(label)}</span><p>{h(text)}</p></div></div>')
 
 
+LINKS = {}  # screen id -> [(label, url)], filled in main() from links.json and the client file
+
+
+def more_links(slide_id):
+    items = LINKS.get(slide_id) or []
+    if not items:
+        return ""
+    anchors = "".join(f'<a href="{escape(url)}" target="_blank" rel="noopener">{h(label)}<span aria-hidden="true"> ↗</span></a>'
+                      for label, url in items)
+    return f'<p class="more-links"><span>Learn more</span>{anchors}</p>'
+
+
 def slide(slide_id, tone, copy, visual, gate_html, extra_class=""):
     eyebrow, title, lead = copy["eyebrow"], copy["title"], copy["lead"]
     return (f'<section class="slide {tone} {extra_class}" id="{slide_id}" aria-labelledby="title-{slide_id}">'
             f'<div class="slide-content"><div class="copy"><p class="eyebrow">{h(eyebrow)}</p>'
-            f'{heading(slide_id, title)}<p class="lead">{h(lead)}</p></div>'
+            f'{heading(slide_id, title)}<p class="lead">{h(lead)}</p>{more_links(slide_id)}</div>'
             f'<div class="visual">{visual}</div>{gate_html}</div></section>')
 
 
@@ -237,6 +249,8 @@ def mode(client):
 def build_slides(client, terms, c):
     s, cl, t = client["slides"], client["client"], client["timeline"]
     m = mode(client)
+    self_hosted = client["rates"]["private"].get("hosting") == "self-hosted"
+    owner = cl.get("short", cl["name"])
     links = client.get("links", {})
     initial = [a for a in client["agents"] if a.get("initial")]
     addons = [a for a in client["agents"] if not a.get("initial")]
@@ -274,8 +288,9 @@ def build_slides(client, terms, c):
     out.append(slide("prepare", "sky", s["prepare"], controls, gate(*s["prepare"]["gate"])))
 
     first = fee_note("Compute surcharge starts",
-                     f'From month {t["limited_month"]}, a {round(terms["surcharge_private"] * 100)}% surcharge applies to the inference '
-                     f'cost of live agents. With about {round(c["first_share"] * 100)}% of customers using them, that is roughly '
+                     f'From month {t["limited_month"]}, a {round(terms["surcharge_private"] * 100)}% surcharge applies to the '
+                     + ("market-rate value of live agents' inference." if self_hosted else "inference cost of live agents.") +
+                     f' With about {round(c["first_share"] * 100)}% of customers using them, that is roughly '
                      f'{money(c["first_surcharge"])} for the month.')
     out.append(slide("rollout", "sky", s["rollout"], route(s["rollout"]["steps"]) + first, gate(*s["rollout"]["gate"])))
 
@@ -292,7 +307,7 @@ def build_slides(client, terms, c):
                    f'<td>{money(a["cost"])}</td><td>{money(a["surcharge"])}</td></tr>' for a in initial)
     r = client["rates"]["private"]
     table = (f'<table class="cost-table"><thead><tr><th scope="col">Agent</th><th scope="col">Volume / month</th>'
-             f'<th scope="col">Inference</th><th scope="col">Surcharge {round(terms["surcharge_private"] * 100)}%</th></tr></thead>'
+             f'<th scope="col">{"Market-rate reference" if self_hosted else "Inference"}</th><th scope="col">Surcharge {round(terms["surcharge_private"] * 100)}%</th></tr></thead>'
              f'<tbody>{rows}</tbody><tfoot><tr><th scope="row">Total</th><td></td><td>{money(c["run_cost"])}</td>'
              f'<td>{money(c["run_surcharge"])}</td></tr></tfoot></table>'
             )
@@ -309,13 +324,14 @@ def build_slides(client, terms, c):
     out.append(slide("addons", "violet", s["addons"], addon_list,
                      gate("ALSO POSSIBLE", client.get("addons_extra", "") + " Add-on fees are quoted separately.")))
 
+    year_note = (f"Inference runs on {owner}'s own hardware and is not billed; add-ons excluded" if self_hosted else
+                 f"Plus ~{money(c['inference'])} inference at cost, paid to the provider or passed through; add-ons excluded")
     grid = (f'<div class="summary-grid">'
             f'<div class="orange"><span>01. {h(terms["setup_label"])}</span><b>{money(terms["setup_fee"])}</b><small>Stage 1 · month {t["setup_month"]}</small></div>'
             f'<div class="mint"><span>02. Maintenance</span><b>{money(c["maintenance"])}</b><small>{money(terms["maintenance_prepay"])} prepaid + '
             f'{c["monthly_count"]} × {money(terms["maintenance_monthly"])}</small></div>'
-            f'<div class="sky"><span>03. Compute surcharge</span><b>{money(c["surcharge"])}</b><small>25% of {money(c["inference"])} inference</small></div>'
-            f'<div class="violet"><span>Year-one FireFlow fees</span><b>{money(c["fees_total"])}</b><small>Plus ~{money(c["inference"])} inference at cost, '
-            f'paid to the provider or passed through; add-ons excluded</small></div></div>')
+            f'<div class="sky"><span>03. Compute surcharge</span><b>{money(c["surcharge"])}</b><small>25% of {money(c["inference"])} {"market-rate reference" if self_hosted else "inference"}</small></div>'
+            f'<div class="violet"><span>Year-one FireFlow fees</span><b>{money(c["fees_total"])}</b><small>{year_note}</small></div></div>')
     link_html = ""
     if links.get("standard_model"):
         link_html += f'<a class="primary-link" href="{escape(links["standard_model"])}">Standard commercial model {icon("arrow")}</a>'
@@ -361,6 +377,16 @@ EXAMPLE_CSS = """
 #addons .service-list{gap:10px}#addons .service-list>div{padding:13px 18px}#addons .service-list p{gap:4px}
 @media(max-width:1000px) and (orientation:portrait){#addons .service-list>div{padding:10px 12px}#addons .service-list{gap:8px}}
 @media(min-width:1001px) and (max-height:800px){#addons .service-list>div{padding:10px 16px}#addons .service-list p>span:not(.addon-head){font-size:13px}}
+.more-links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:18px;font-size:13px;line-height:1.35}
+.more-links>span{width:100%;font:500 10px/1.3 'Red Hat Mono';letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.more-links a{color:var(--tone);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:1000px) and (orientation:portrait),(orientation:landscape) and (max-height:540px){
+ .more-links{flex-wrap:nowrap;overflow-x:auto;margin-top:8px;font-size:12px;gap:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .more-links::-webkit-scrollbar{display:none}
+ .more-links>span{width:auto;flex:none;align-self:center}.more-links a{flex:none;white-space:nowrap}
+}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:600px),(orientation:landscape) and (max-height:360px){.more-links{display:none}}
+@media(max-width:1000px) and (orientation:portrait) and (min-height:780px){.more-links{flex-wrap:wrap;overflow:visible;gap:4px 12px}.more-links a{white-space:normal}}
 .cost-table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:15px}
 .cost-table th,.cost-table td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--border);color:var(--text)}
 .cost-table th:first-child{text-align:left}
@@ -386,6 +412,8 @@ EXAMPLE_CSS = """
  #operate .ownership-split{display:none}
  .cost-table th:nth-child(2),.cost-table td:nth-child(2){display:none}
  #use-cases .service-list p>span{font-size:10px}
+ #systems .control-list small{display:none}#systems .control-list>div{padding:8px 12px}
+ #usage .cost-table th,#usage .cost-table td{padding:4px 5px}#usage .lead{font-size:12px}
 }
 @media(orientation:landscape) and (max-height:540px){
  .client-logo img{height:28px;max-width:150px}
@@ -469,6 +497,12 @@ def main():
     client = json.loads(client_path.read_text(encoding="utf-8"))
     validate(client, terms)
     load_logos(client, client_path.parent)
+    std = json.loads((SKILL / "links.json").read_text(encoding="utf-8"))
+    detailed = client.get("links", {}).get("detailed", std["detailed"])
+    for screen, items in std["screens"].items():
+        override = client["slides"].get(screen.replace("-", "_"), {}).get("links")
+        chosen = items if override is None else override
+        LINKS[screen] = [(label, url.replace("{detailed}", detailed)) for label, url in chosen]
     c = calculate(client, terms)
     slides_html = build_slides(client, terms, c)
     metadata = []
