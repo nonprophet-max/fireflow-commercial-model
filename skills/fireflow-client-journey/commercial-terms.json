@@ -1,0 +1,16 @@
+{
+  "_note": "Proposed FireFlow commercial terms (v2, published 19 October 2026). Change them here only when the standard model changes, then rebuild every example.",
+  "currency": "USD",
+  "setup_fee": 100000,
+  "setup_label": "Scoping to integration",
+  "maintenance_monthly": 20000,
+  "maintenance_prepay": 120000,
+  "maintenance_prepay_months": 6,
+  "maintenance_prepay_stage": 2,
+  "maintenance_rule": "Monthly billing starts at go-live or after the prepaid months, whichever is later.",
+  "surcharge_private": 0.25,
+  "surcharge_frontier": 0.04,
+  "surcharge_start": "The first Stage 4 production workload.",
+  "uio_models": "private-only",
+  "addon_label": "Optional add-on services"
+}
