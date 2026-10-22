@@ -1,0 +1,115 @@
+{
+  "_note": "Standard 'Learn more' links shown on each screen of every deck. {detailed} and {overview} are the detailed commercial plan and the full overview of the standard walkthrough. A client file can override a screen with slides.<screen>.links (an empty list removes them).",
+  "detailed": "https://nonprophet-max.github.io/fireflow-commercial-model/detailed.html",
+  "screens": {
+    "intro": [
+      [
+        "FireFlow website",
+        "https://persistentai.org/"
+      ],
+      [
+        "Documentation",
+        "https://docs.persistentai.org/"
+      ]
+    ],
+    "use-cases": [
+      [
+        "UIO and BPO explained",
+        "{overview}#usage"
+      ],
+      [
+        "Why FireFlow",
+        "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
+      ]
+    ],
+    "before-after": [
+      [
+        "Why FireFlow",
+        "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
+      ]
+    ],
+    "systems": [
+      [
+        "On-premise deployment",
+        "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
+      ],
+      [
+        "Architecture",
+        "https://docs.persistentai.org/developer/architecture/overview.html"
+      ]
+    ],
+    "why": [
+      [
+        "Documentation",
+        "https://docs.persistentai.org/"
+      ],
+      [
+        "Visual builder",
+        "https://docs.persistentai.org/guide/getting-started/quickstart/"
+      ]
+    ],
+    "staging": [
+      [
+        "Setup terms",
+        "{detailed}#setup-and-integration"
+      ]
+    ],
+    "build": [
+      [
+        "Maintenance terms",
+        "{detailed}#maintenance-and-support"
+      ]
+    ],
+    "team": [
+      [
+        "Visual builder quickstart",
+        "https://docs.persistentai.org/guide/getting-started/quickstart/"
+      ]
+    ],
+    "prepare": [
+      [
+        "Approvals and isolation",
+        "https://persistentai.substack.com/p/fireflow-how-fireflow-brings-ai-agents"
+      ],
+      [
+        "Security notes",
+        "https://docs.persistentai.org/developer/architecture/overview.html#security-considerations"
+      ]
+    ],
+    "rollout": [
+      [
+        "Stages and gates",
+        "{detailed}#deployment"
+      ]
+    ],
+    "operate": [
+      [
+        "Maintenance terms",
+        "{detailed}#maintenance-and-support"
+      ]
+    ],
+    "usage": [
+      [
+        "Surcharge terms",
+        "{detailed}#compute-surcharge"
+      ]
+    ],
+    "addons": [
+      [
+        "UIO and BPO explained",
+        "{overview}#usage"
+      ],
+      [
+        "Add-on terms",
+        "{detailed}#optional-services"
+      ]
+    ],
+    "year-one": [
+      [
+        "Detailed plan",
+        "{detailed}"
+      ]
+    ]
+  },
+  "overview": "https://nonprophet-max.github.io/fireflow-commercial-model/overview.html"
+}

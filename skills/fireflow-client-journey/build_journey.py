@@ -48,11 +48,34 @@ def gate(label, text):
             f'<div><span class="mini-label">{h(label)}</span><p>{h(text)}</p></div></div>')
 
 
+LINKS = {}  # screen id -> [(label, url)], filled in main() from links.json and the client file
+
+
+def more_links(slide_id):
+    items = LINKS.get(slide_id) or []
+    if not items:
+        return ""
+    anchors = "".join(f'<a href="{escape(url)}" target="_blank" rel="noopener">{h(label)}<span aria-hidden="true"> ↗</span></a>'
+                      for label, url in items)
+    return f'<p class="more-links"><span>Learn more</span>{anchors}</p>'
+
+
+TERMS = {"UIO": "UIO (User Intent Orchestration): customer-facing agents and chats.",
+         "BPO": "BPO (Business Process Orchestration): agents for internal processes."}
+
+
+def terms_note(*parts):
+    text = " ".join(parts)
+    found = [TERMS[k] for k in TERMS if re.search(r"\b" + k + r"\b", text)]
+    return f'<p class="terms-note">{"<br>".join(h(x) for x in found)}</p>' if found else ""
+
+
 def slide(slide_id, tone, copy, visual, gate_html, extra_class=""):
     eyebrow, title, lead = copy["eyebrow"], copy["title"], copy["lead"]
+    note = terms_note(eyebrow, lead, visual, gate_html)
     return (f'<section class="slide {tone} {extra_class}" id="{slide_id}" aria-labelledby="title-{slide_id}">'
             f'<div class="slide-content"><div class="copy"><p class="eyebrow">{h(eyebrow)}</p>'
-            f'{heading(slide_id, title)}<p class="lead">{h(lead)}</p></div>'
+            f'{heading(slide_id, title)}<p class="lead">{h(lead)}</p>{note}{more_links(slide_id)}</div>'
             f'<div class="visual">{visual}</div>{gate_html}</div></section>')
 
 
@@ -237,6 +260,8 @@ def mode(client):
 def build_slides(client, terms, c):
     s, cl, t = client["slides"], client["client"], client["timeline"]
     m = mode(client)
+    self_hosted = client["rates"]["private"].get("hosting") == "self-hosted"
+    owner = cl.get("short", cl["name"])
     links = client.get("links", {})
     initial = [a for a in client["agents"] if a.get("initial")]
     addons = [a for a in client["agents"] if not a.get("initial")]
@@ -259,7 +284,24 @@ def build_slides(client, terms, c):
     later = ", ".join([addons[0]["name"]] + [soft(a["name"]) for a in addons[1:]]) if addons else "None planned"
     out.append(slide("use-cases", "violet", s["use_cases"], uc, gate("LATER: ADD-ON SERVICES", later + ".")))
 
+    if s.get("before_after"):
+        ba = s["before_after"]
+        def column(side, cls):
+            steps = "".join(f"<li>{h(x)}</li>" for x in side["steps"])
+            stats = "".join(f"<span><b>{h(v)}</b>{h(k)}</span>" for v, k in side["stats"])
+            return (f'<div class="jc-col {cls}"><p class="mini-label">{h(side["label"])}</p><ol>{steps}</ol>'
+                    f'<div class="jc-stats">{stats}</div></div>')
+        compare = (f'<div class="journey-compare">{column(ba["before"], "jc-before")}'
+                   f'<span class="jc-arrow" aria-hidden="true">{icon("arrow")}</span>{column(ba["after"], "jc-after")}</div>')
+        out.append(slide("before-after", "gold", ba, compare, gate(*ba["gate"])))
+
     out.append(slide("systems", "sky", s["systems"], control_list(s["systems"]["items"]), gate(*s["systems"]["gate"])))
+
+    if s.get("why") is not False:
+        std = json.loads((SKILL / "platform.json").read_text(encoding="utf-8"))["why"]
+        why = {**std, **(s.get("why") or {})}
+        why = json.loads(json.dumps(why).replace("{short}", owner.replace('"', '\\"')))
+        out.append(slide("why", "sky", why, control_list(why["items"]), gate(*why["gate"]), "why-slide"))
 
     panel = (f'<div class="price-panel orange"><p class="mini-label">STAGE 1 · ONE-TIME</p>'
              f'<p class="amount">{money(terms["setup_fee"])}<span></span></p>'
@@ -270,12 +312,18 @@ def build_slides(client, terms, c):
                       f'Invoiced at Stage 2 (month {t["prepay_month"]}). Covers Stages 2–4 and months {t["prepay_month"]}–{c["prepay_end"]}.')
     out.append(slide("build", "orange", s["build"], route(s["build"]["steps"]) + prepay, gate(*s["build"]["gate"])))
 
+    if s.get("team"):
+        tm = s["team"]
+        out.append(slide("team", "violet", tm, route(tm["steps"], tones=("gold", "violet", "mint")) + fee_note(*tm["note"]),
+                         gate(*tm["gate"])))
+
     controls = control_list([{"icon": "shield", "title": a["name"], "text": a["control"]} for a in initial])
     out.append(slide("prepare", "sky", s["prepare"], controls, gate(*s["prepare"]["gate"])))
 
     first = fee_note("Compute surcharge starts",
-                     f'From month {t["limited_month"]}, a {round(terms["surcharge_private"] * 100)}% surcharge applies to the inference '
-                     f'cost of live agents. With about {round(c["first_share"] * 100)}% of customers using them, that is roughly '
+                     f'From month {t["limited_month"]}, a {round(terms["surcharge_private"] * 100)}% surcharge applies to the '
+                     + ("market-rate value of live agents' inference." if self_hosted else "inference cost of live agents.") +
+                     f' With about {round(c["first_share"] * 100)}% of customers using them, that is roughly '
                      f'{money(c["first_surcharge"])} for the month.')
     out.append(slide("rollout", "sky", s["rollout"], route(s["rollout"]["steps"]) + first, gate(*s["rollout"]["gate"])))
 
@@ -292,7 +340,7 @@ def build_slides(client, terms, c):
                    f'<td>{money(a["cost"])}</td><td>{money(a["surcharge"])}</td></tr>' for a in initial)
     r = client["rates"]["private"]
     table = (f'<table class="cost-table"><thead><tr><th scope="col">Agent</th><th scope="col">Volume / month</th>'
-             f'<th scope="col">Inference</th><th scope="col">Surcharge {round(terms["surcharge_private"] * 100)}%</th></tr></thead>'
+             f'<th scope="col">{"Market-rate reference" if self_hosted else "Inference"}</th><th scope="col">Surcharge {round(terms["surcharge_private"] * 100)}%</th></tr></thead>'
              f'<tbody>{rows}</tbody><tfoot><tr><th scope="row">Total</th><td></td><td>{money(c["run_cost"])}</td>'
              f'<td>{money(c["run_surcharge"])}</td></tr></tfoot></table>'
             )
@@ -309,13 +357,14 @@ def build_slides(client, terms, c):
     out.append(slide("addons", "violet", s["addons"], addon_list,
                      gate("ALSO POSSIBLE", client.get("addons_extra", "") + " Add-on fees are quoted separately.")))
 
+    year_note = (f"Inference runs on {owner}'s own hardware and is not billed; add-ons excluded" if self_hosted else
+                 f"Plus ~{money(c['inference'])} inference at cost, paid to the provider or passed through; add-ons excluded")
     grid = (f'<div class="summary-grid">'
             f'<div class="orange"><span>01. {h(terms["setup_label"])}</span><b>{money(terms["setup_fee"])}</b><small>Stage 1 · month {t["setup_month"]}</small></div>'
             f'<div class="mint"><span>02. Maintenance</span><b>{money(c["maintenance"])}</b><small>{money(terms["maintenance_prepay"])} prepaid + '
             f'{c["monthly_count"]} × {money(terms["maintenance_monthly"])}</small></div>'
-            f'<div class="sky"><span>03. Compute surcharge</span><b>{money(c["surcharge"])}</b><small>25% of {money(c["inference"])} inference</small></div>'
-            f'<div class="violet"><span>Year-one FireFlow fees</span><b>{money(c["fees_total"])}</b><small>Plus ~{money(c["inference"])} inference at cost, '
-            f'paid to the provider or passed through; add-ons excluded</small></div></div>')
+            f'<div class="sky"><span>03. Compute surcharge</span><b>{money(c["surcharge"])}</b><small>25% of {money(c["inference"])} {"market-rate reference" if self_hosted else "inference"}</small></div>'
+            f'<div class="violet"><span>Year-one FireFlow fees</span><b>{money(c["fees_total"])}</b><small>{year_note}</small></div></div>')
     link_html = ""
     if links.get("standard_model"):
         link_html += f'<a class="primary-link" href="{escape(links["standard_model"])}">Standard commercial model {icon("arrow")}</a>'
@@ -344,6 +393,31 @@ def waves_mark():
 
 
 EXAMPLE_CSS = """
+/* Mid-height and narrow phones: drop secondary lines on the densest screens */
+@media(max-width:1000px) and (orientation:portrait) and (max-height:860px){
+ #addons .service-list p>span:not(.addon-head){display:none}#addons .service-list>div{padding:9px 12px}
+ #year-one .summary-grid small{font-size:10px}#year-one .lead{font-size:13px}
+ #usage .cost-table th,#usage .cost-table td{padding:6px 5px}
+}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:800px){
+ #systems .control-list small,#prepare .control-list small{font-size:11px}#systems .control-list>div,#prepare .control-list>div{padding:9px 12px}
+ #usage .cost-table th:nth-child(2),#usage .cost-table td:nth-child(2){display:none}
+ #year-one .summary-grid>div{padding:10px;gap:5px}
+}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:800px){.slide-content{row-gap:8px}}
+@media(max-width:370px) and (orientation:portrait){
+ #use-cases .service-list p>span:not(.addon-head),#bank .control-list small,#systems .control-list small{display:none}
+}
+/* Phones: if a screen's content is taller than the viewport (long copy, large system text size,
+   in-app browsers), let that screen scroll instead of letting blocks overlap. */
+@media(max-width:1000px) and (orientation:portrait){
+ .slide{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}.slide::-webkit-scrollbar{display:none}
+ .slide-content{box-sizing:border-box;height:auto;min-height:100%;grid-template-rows:auto minmax(auto,1fr) auto}
+}
+@media(orientation:landscape) and (max-height:540px){
+ .slide{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}.slide::-webkit-scrollbar{display:none}
+ .slide-content{box-sizing:border-box;height:auto;min-height:100%;grid-template-rows:minmax(auto,1fr) auto}
+}
 .client-card{border:1px solid var(--border);border-top:4px solid var(--client);border-radius:12px;background:var(--panel);padding:24px;display:flex;flex-direction:column;gap:16px}
 .client-head{display:flex;gap:16px;align-items:center}
 .client-mark{width:48px;height:48px;color:var(--client);flex:none}
@@ -361,6 +435,36 @@ EXAMPLE_CSS = """
 #addons .service-list{gap:10px}#addons .service-list>div{padding:13px 18px}#addons .service-list p{gap:4px}
 @media(max-width:1000px) and (orientation:portrait){#addons .service-list>div{padding:10px 12px}#addons .service-list{gap:8px}}
 @media(min-width:1001px) and (max-height:800px){#addons .service-list>div{padding:10px 16px}#addons .service-list p>span:not(.addon-head){font-size:13px}}
+.journey-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch}
+.jc-col{border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.jc-after{border-color:var(--tone);border-width:2px}
+.jc-col ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px;line-height:1.35;color:var(--secondary)}
+.jc-after ol{color:var(--text)}
+.jc-stats{display:flex;gap:16px;margin-top:auto;padding-top:10px;border-top:1px solid var(--border)}
+.jc-stats span{display:flex;flex-direction:column;font:500 10px/1.3 'Red Hat Mono';text-transform:uppercase;color:var(--muted)}
+.jc-stats b{font:700 24px/1.1 'Red Hat Display';text-transform:none;color:var(--text)}
+.jc-after .jc-stats b{color:var(--tone)}
+.jc-arrow{align-self:center;color:var(--tone)}.jc-arrow .icon{width:24px;height:24px}
+@media(max-width:1000px) and (orientation:portrait){
+ .journey-compare{grid-template-columns:1fr;gap:8px}.jc-arrow{display:none}.jc-col{padding:12px 14px;gap:6px}
+ .jc-col ol{font-size:12px;gap:3px}.jc-stats{padding-top:6px}.jc-stats b{font-size:18px}
+}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:860px){.jc-before ol{display:none}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:600px){.jc-col ol{display:none}}
+@media(orientation:landscape) and (max-height:540px){.jc-col ol{display:none}.jc-col{padding:8px 12px;gap:4px}.jc-stats b{font-size:17px}}
+.terms-note{margin-top:12px;font-size:13px;line-height:1.45;color:var(--muted)}
+@media(max-width:1000px) and (orientation:portrait),(orientation:landscape) and (max-height:540px){.terms-note{margin-top:6px;font-size:11px;line-height:1.35}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:600px),(orientation:landscape) and (max-height:540px){.terms-note br{display:none}}
+.more-links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:18px;font-size:13px;line-height:1.35}
+.more-links>span{width:100%;font:500 10px/1.3 'Red Hat Mono';letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.more-links a{color:var(--tone);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:1000px) and (orientation:portrait),(orientation:landscape) and (max-height:540px){
+ .more-links{flex-wrap:nowrap;overflow-x:auto;margin-top:8px;font-size:12px;gap:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .more-links::-webkit-scrollbar{display:none}
+ .more-links>span{width:auto;flex:none;align-self:center}.more-links a{flex:none;white-space:nowrap}
+}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:600px),(orientation:landscape) and (max-height:360px){.more-links{display:none}}
+@media(max-width:1000px) and (orientation:portrait) and (min-height:860px){.more-links{flex-wrap:wrap;overflow:visible;gap:4px 12px}.more-links a{white-space:normal}}
 .cost-table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:15px}
 .cost-table th,.cost-table td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--border);color:var(--text)}
 .cost-table th:first-child{text-align:left}
@@ -386,6 +490,11 @@ EXAMPLE_CSS = """
  #operate .ownership-split{display:none}
  .cost-table th:nth-child(2),.cost-table td:nth-child(2){display:none}
  #use-cases .service-list p>span{font-size:10px}
+ #systems .control-list small,#bank .control-list small{display:none}#systems .control-list>div,#bank .control-list>div{padding:8px 12px}
+ #use-cases .service-list p>span:not(.addon-head){display:none}
+ #prepare .control-list small{display:none}#prepare .control-list>div{padding:8px 12px}
+ #rollout .flow-step>span:last-child:not(.step-number),#addons .addon-rate{display:none}
+ #usage .cost-table th,#usage .cost-table td{padding:4px 5px}#usage .lead{font-size:12px}
 }
 @media(orientation:landscape) and (max-height:540px){
  .client-logo img{height:28px;max-width:150px}
@@ -404,6 +513,16 @@ EXAMPLE_CSS = """
  .cost-table thead{display:none}#addons .service-list{gap:3px}#addons .service-list>div{padding:3px 10px}#addons .service-list b{font-size:12px}#addons .addon-rate{font-size:9px}
  #year-one .overview-links{display:none}.summary-grid b{font-size:16px}
 }
+/* Why FireFlow: five platform features */
+#why .control-list{grid-template-columns:1fr 1fr;gap:10px}#why .control-list>div{padding:14px 16px;gap:14px}
+#why .control-list>div:last-child{grid-column:1/-1}#why .control-list b{font-size:18px}#why .control-list small{font-size:13px}
+@media(min-width:1001px) and (max-height:800px){#why .control-list>div{padding:10px 14px}#why .control-list small{font-size:12px}}
+@media(max-width:1000px) and (orientation:portrait){#why .control-list{grid-template-columns:1fr;gap:6px}#why .control-list>div{padding:8px 12px;gap:12px}#why .control-list b{font-size:15px}#why .control-list small{font-size:11px}#why .control-list .icon{width:22px;height:22px}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:760px){#why .control-list>div{padding:6px 12px}#why .control-list small{font-size:10.5px;line-height:1.3}#why .control-list span{gap:2px}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:680px){#why .lead{display:none}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:620px){#why .more-links{display:none}}
+@media(max-width:1000px) and (orientation:portrait) and (max-height:600px){#why .control-list small{display:none}}
+@media(orientation:landscape) and (max-height:540px){#why .control-list{gap:5px}#why .control-list>div{padding:5px 10px;gap:10px}#why .control-list small{display:none}#why .control-list b{font-size:13px}#why .control-list .icon{width:18px;height:18px}}
 """
 
 
@@ -454,7 +573,7 @@ def page(client, slides_html, metadata):
     )
 
 
-CHAPTERS = {"intro": "Start", "bank": "Start", "use-cases": "Scope", "systems": "Scope", "staging": "Deploy", "build": "Deploy",
+CHAPTERS = {"intro": "Start", "bank": "Start", "use-cases": "Scope", "before-after": "Scope", "team": "Deploy", "systems": "Scope", "why": "Scope", "staging": "Deploy", "build": "Deploy",
             "prepare": "Deploy", "rollout": "Deploy", "operate": "Operate", "usage": "Usage", "addons": "Extend", "year-one": "Summary"}
 
 
@@ -469,6 +588,13 @@ def main():
     client = json.loads(client_path.read_text(encoding="utf-8"))
     validate(client, terms)
     load_logos(client, client_path.parent)
+    std = json.loads((SKILL / "links.json").read_text(encoding="utf-8"))
+    detailed = client.get("links", {}).get("detailed", std["detailed"])
+    overview = client.get("links", {}).get("overview", std["overview"])
+    for screen, items in std["screens"].items():
+        override = (client["slides"].get(screen.replace("-", "_")) or {}).get("links")
+        chosen = items if override is None else override
+        LINKS[screen] = [(label, url.replace("{detailed}", detailed).replace("{overview}", overview)) for label, url in chosen]
     c = calculate(client, terms)
     slides_html = build_slides(client, terms, c)
     metadata = []

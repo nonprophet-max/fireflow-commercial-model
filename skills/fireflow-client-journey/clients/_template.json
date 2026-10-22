@@ -18,7 +18,8 @@
     "private": {
       "in": 0.6,
       "out": 0.8,
-      "label": "private open-weight model via an approved private API"
+      "label": "private open-weight model running in the bank's own infrastructure",
+      "hosting": "self-hosted"
     },
     "frontier": {
       "in": 3.0,
@@ -101,27 +102,27 @@
       "lead": "TODO: one or two sentences: how FireFlow could be introduced here, stage by stage, with estimated year-one costs."
     },
     "bank": {
-      "eyebrow": "YOUR ORGANISATION · CONTEXT",
+      "eyebrow": "THE CLIENT · THE PROBLEM",
       "title": [
         "TODO: plain line",
         "TODO: emphasised line."
       ],
-      "lead": "TODO: who they serve and through which channels (public information only).",
+      "lead": "TODO: who they serve and through which channels, then the business problem: where customers' attention and spend go instead of the client's app.",
       "items": [
         {
           "icon": "message",
-          "title": "TODO: priority",
-          "text": "TODO: why it matters"
+          "title": "TODO: problem",
+          "text": "TODO: one line"
         },
         {
-          "icon": "message",
-          "title": "TODO: priority",
-          "text": "TODO: why it matters"
+          "icon": "branch",
+          "title": "TODO: problem",
+          "text": "TODO: one line"
         },
         {
-          "icon": "message",
-          "title": "TODO: priority",
-          "text": "TODO: why it matters"
+          "icon": "code",
+          "title": "TODO: problem",
+          "text": "TODO: one line"
         }
       ],
       "gate": [
@@ -135,35 +136,87 @@
         "Three agents first.",
         "More when ready."
       ],
-      "lead": "Stage 1 scopes three agents. The others follow later as optional add-on services."
+      "lead": "TODO: what the three initial agents bring into the client's app (value, not support)."
+    },
+    "before_after": {
+      "eyebrow": "BEFORE / AFTER · TODO: one journey",
+      "title": [
+        "TODO: plain line",
+        "TODO: emphasised line."
+      ],
+      "lead": "TODO: how the journey works today versus inside the client's app with FireFlow.",
+      "before": {
+        "label": "TODAY",
+        "steps": [
+          "TODO: step"
+        ],
+        "stats": [
+          [
+            "TODO: n",
+            "steps"
+          ],
+          [
+            "TODO: n",
+            "apps"
+          ],
+          [
+            "TODO: n",
+            "min"
+          ]
+        ]
+      },
+      "after": {
+        "label": "WITH TODO: CLIENT AND FIREFLOW",
+        "steps": [
+          "TODO: step"
+        ],
+        "stats": [
+          [
+            "TODO: n",
+            "steps"
+          ],
+          [
+            "TODO: n",
+            "app"
+          ],
+          [
+            "TODO: n",
+            "min"
+          ]
+        ]
+      },
+      "gate": [
+        "WHY IT MATTERS",
+        "TODO: what the client gains: revenue, engagement, cost."
+      ]
     },
     "systems": {
-      "eyebrow": "INITIAL MEETING · SYSTEMS",
+      "eyebrow": "INITIAL MEETING · ARCHITECTURE",
       "title": [
-        "Systems the agents",
-        "will touch."
+        "Runs inside the bank.",
+        "Controlled by the bank."
       ],
-      "lead": "Each system has a named owner at the bank. Agents get only the actions their use case needs.",
+      "lead": "FireFlow is installed in the bank's own data centre or private cloud. Bank engineers connect its systems and decide what each agent may do.",
       "items": [
         {
           "icon": "layers",
-          "title": "Core banking",
-          "text": "Cloud core: accounts, cards, transactions."
+          "title": "On-premises deployment",
+          "text": "FireFlow and its data stay inside the bank's infrastructure."
         },
         {
           "icon": "shield",
-          "title": "eKYC and cases",
-          "text": "UAE Pass and Emirates ID results; verification queue."
+          "title": "Bank-controlled access",
+          "text": "TODO: which bank systems its engineers connect through approved APIs."
         },
         {
-          "icon": "connect",
-          "title": "App, CRM and contact centre",
-          "text": "Chat channel, profiles, complaints, hand-off to people."
+          "icon": "check",
+          "title": "No vendor access to data",
+          "text": "Persistent Labs works only with synthetic data and never sees bank or customer data."
         }
       ],
       "gate": [
         "DATA BOUNDARY",
-        "Customer data is processed only by private models from an approved provider."
+        "Customer data and the AI models stay inside the bank's infrastructure. Persistent Labs has no access."
       ]
     },
     "staging": {
@@ -172,10 +225,10 @@
         "Staging for",
         "three agents."
       ],
-      "lead": "Persistent Labs deploys staging in the bank's private cloud, trains the bank's business and engineering teams and writes the three agent specifications.",
+      "lead": "Persistent Labs sets up an isolated staging environment with synthetic data, trains the bank's business and engineering teams and writes the three agent specifications.",
       "note": [
         "Sandbox only",
-        "Mock customer data; no production access."
+        "Synthetic customer data; no production access."
       ],
       "gate": [
         "NEXT GATE",
@@ -208,6 +261,36 @@
         "All three agents pass the agreed tests; the bank's business and engineering teams can edit the flows."
       ]
     },
+    "team": {
+      "eyebrow": "STAGE 2 · YOUR TEAM BUILDS TOO",
+      "title": [
+        "Your product team",
+        "builds its own agents."
+      ],
+      "lead": "TODO: client's product managers assemble new agents in FireFlow's visual builder without code and test them in staging with synthetic data.",
+      "steps": [
+        [
+          "Idea",
+          "TODO: example idea"
+        ],
+        [
+          "Build",
+          "Visual builder, no code"
+        ],
+        [
+          "Test",
+          "Staging, synthetic data"
+        ]
+      ],
+      "note": [
+        "Same gates to production",
+        "New agents reach customers only after the client's controls and approvals."
+      ],
+      "gate": [
+        "WHAT CHANGES",
+        "New services ship without waiting in the IT release queue, built by the people who own the product."
+      ]
+    },
     "prepare": {
       "eyebrow": "STAGE 3 · PREPARE PRODUCTION · MONTH 5",
       "title": [
@@ -226,7 +309,7 @@
         "Start with",
         "5% of customers."
       ],
-      "lead": "Production APIs are connected. About 5% of app users get the new chat and onboarding help; KYC triage runs on live cases.",
+      "lead": "TODO: the client's engineers connect production APIs; who gets the agents first and what runs on live cases.",
       "steps": [
         [
           "Connect",
@@ -252,7 +335,7 @@
         "All customers.",
         "Bank in control."
       ],
-      "lead": "TODO: who the live agents reach at full production. The bank runs operations; Persistent Labs maintains the platform.",
+      "lead": "TODO: who the live agents reach at full production. The bank runs operations; Persistent Labs ships updates and support.",
       "split": [
         [
           "TODO: client full name",
@@ -260,7 +343,7 @@
         ],
         [
           "Persistent Labs",
-          "Maintenance, updates and agreed incident response."
+          "Updates, fixes and incident support, with no access to customer data."
         ]
       ]
     },
@@ -273,7 +356,7 @@
       "lead": "TODO: monthly estimate at full volume; say which agents are customer-facing (UIO) and which are internal (BPO), and which model category applies.",
       "gate": [
         "BILLING",
-        "Monthly in arrears. Inference cost and surcharge are shown separately."
+        "Monthly in arrears. The reference is only the basis for the surcharge; the bank's own hardware is not billed again."
       ]
     },
     "addons": {
@@ -292,5 +375,9 @@
       ],
       "lead": "Months 1–12 for the three initial agents. Add-on services are excluded."
     }
+  },
+  "links": {
+    "standard_model": "https://nonprophet-max.github.io/fireflow-commercial-model/",
+    "overview": "https://nonprophet-max.github.io/fireflow-commercial-model/overview.html"
   }
 }
